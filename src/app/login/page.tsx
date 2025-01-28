@@ -1,5 +1,4 @@
 import { GalleryVerticalEnd } from "lucide-react"
-
 import { LoginForm } from "@/components/login-form"
 
 export default function LoginPage() {
@@ -11,7 +10,7 @@ export default function LoginPage() {
                         <div className="flex h-6 w-6 items-center justify-center rounded-md bg-primary text-primary-foreground">
                             <GalleryVerticalEnd className="size-4" />
                         </div>
-                        Acme Inc.
+                        Fluffy nest.
                     </a>
                 </div>
                 <div className="flex flex-1 items-center justify-center">
