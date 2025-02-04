@@ -1,37 +1,64 @@
 <script lang="ts">
-    import { Button } from "$lib/components/ui/button/index";
-    import * as Card from "$lib/components/ui/card/index";
-    import { Input } from "$lib/components/ui/input/index";
-    import { Label } from "$lib/components/ui/label/index";
-  </script>
+  import Login from "../components/Login.svelte"
+  import Register from '../components/Register.svelte';
+  import { fade, fly } from 'svelte/transition';
+  import { crossfade } from 'svelte/transition';
   
-  <Card.Root class="mx-auto max-w-sm">
-    <Card.Header>
-      <Card.Title class="text-2xl">Login</Card.Title>
-      <Card.Description>Enter your email below to login to your account</Card.Description>
-    </Card.Header>
-    <Card.Content>
-      <div class="grid gap-4">
-        <div class="grid gap-2">
-          <Label for="email">Email</Label>
-          <Input id="email" type="email" placeholder="m@example.com" required />
-        </div>
-        <div class="grid gap-2">
-          <div class="flex items-center">
-            <Label for="password">Password</Label>
-            <a href="##" class="ml-auto inline-block text-sm underline">
-              Forgot your password?
-            </a>
-          </div>
-          <Input id="password" type="password" required />
-        </div>
-        <Button type="submit" class="w-full">Login</Button>
-        <Button variant="outline" class="w-full">Login with Google</Button>
-      </div>
-      <div class="mt-4 text-center text-sm">
-        Don&apos;t have an account?
-        <a href="##" class="underline">Sign up</a>
-      </div>
-    </Card.Content>
-  </Card.Root>
+  let showLogin = true;
   
+  const toggleView = () => {
+    showLogin = !showLogin;
+  }
+
+  function fadeAndFly(node, {
+    delay = 0,
+    duration = 300,
+    y = 50
+  }) {
+    return {
+      delay,
+      duration,
+      css: (t:number) => `
+        opacity: ${t};
+        transform: translateY(${(1 - t) * y}px);
+      `
+    };
+  }
+</script>
+
+<main>
+  <div class="form-container">
+    {#if showLogin}
+      <div transition:fadeAndFly={{duration: 300, delay: 300}}>
+        <Login {toggleView} />
+      </div>
+    {:else}
+      <div transition:fadeAndFly={{duration: 300, delay: 300}}>
+        <Register {toggleView} />
+      </div>
+    {/if}
+  </div>
+</main>
+
+<style>
+  main {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 30vh;
+  }
+
+  .form-container {
+    position: relative;
+    width: 100%;
+    max-width: 24rem; /* 等于 max-w-sm */
+  }
+
+  .form-container > div {
+    position: absolute;
+    width: 100%;
+    left: 0;
+    right: 0;
+  }
+</style>
