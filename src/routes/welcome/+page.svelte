@@ -1,9 +1,9 @@
 <script lang="ts">
-    import Login from "../../components/Login.svelte"
-    import Register from '../../components/Register.svelte';
+    import AppLogin from "$lib/components/app-login.svelte"
+    import AppRegister from '$lib/components/app-register.svelte';
     import { fade } from 'svelte/transition';  
   
-    let showLogin = true;
+    let showLogin = $state(true);
     
     const toggleView = () => {
       showLogin = !showLogin;
@@ -14,11 +14,11 @@
     <div class="form-container">
       {#if showLogin}
         <div in:fade={{duration: 150, delay: 150}}>
-          <Login {toggleView} />
+          <AppLogin {toggleView} />
         </div>
       {:else}
         <div in:fade={{duration: 150, delay: 150}}>
-          <Register {toggleView} />
+          <AppRegister {toggleView} />
         </div>
       {/if}
     </div>

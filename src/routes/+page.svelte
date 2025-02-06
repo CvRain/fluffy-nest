@@ -1,6 +1,14 @@
 <script lang="ts">
-    import { goto } from '$app/navigation';
+	import { goto } from '$app/navigation';
+	import { onMount } from 'svelte';
 
-    // 在组件挂载时跳转到 welcome 路由
-    goto('/welcome');
+	onMount(() => {
+		goto('/welcome');
+	})
 </script>
+
+<main>
+	<div>
+		Hello world!
+	</div>
+</main>
