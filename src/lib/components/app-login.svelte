@@ -5,11 +5,35 @@
 	import { Label } from '$lib/components/ui/label';
 	import { goto } from '$app/navigation'; // 导入goto用于页面跳转
 	import {API_BASE_URL} from '$lib/config';
+	import axios from 'axios';
+	import { onMount } from 'svelte';
 
 	export let toggleView: () => void;
 
 	let email = '';
 	let password = '';
+
+	const handleTokenLogin = async () => {
+		//从cookie中获取token
+		const token = document.cookie.split(';').find(c => c.trim().startsWith('token='))?.split('=')[1];
+
+		const config = {
+			method: 'get',
+			url: `${API_BASE_URL}/user/login/token`,
+			headers: {
+				'Authorization': token
+			}
+		};
+
+		axios(config)
+			.then(function (response) {
+				console.log(JSON.stringify(response.data));
+			})
+			.catch(function (error) {
+				console.log(error);
+			});
+	}
+
 
 	const handleLogin = async () => {
 		try {
@@ -33,6 +57,8 @@
 			console.error('Error during login:', error);
 		}
 	};
+
+	onMount(handleTokenLogin)
 </script>
 
 <Card.Root class="mx-auto max-w-sm">
