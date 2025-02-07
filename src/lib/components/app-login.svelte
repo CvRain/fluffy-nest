@@ -4,7 +4,7 @@
 	import { Input } from '$lib/components/ui/input';
 	import { Label } from '$lib/components/ui/label';
 	import { goto } from '$app/navigation'; // 导入goto用于页面跳转
-	import { onMount } from 'svelte'; // 导入onMount生命周期函数
+	import {API_BASE_URL} from '$lib/config';
 
 	export let toggleView: () => void;
 
@@ -13,7 +13,8 @@
 
 	const handleLogin = async () => {
 		try {
-			const response = await fetch('http://localhost:4000/api/user/login', {
+			const requestUrl = `${API_BASE_URL}/api/user/login`;
+			const response = await fetch(requestUrl, {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json'
