@@ -1,147 +1,47 @@
-<script lang="ts">
-	import * as Sidebar from "$lib/components/ui/sidebar/index.js";
-	import type { ComponentProps } from "svelte";
-
+<script lang="ts" module>
 	// This is sample data.
 	const data = {
-		navMain: [
+		changes: [
 			{
-				title: "Getting Started",
-				url: "#",
-				items: [
-					{
-						title: "Installation",
-						url: "#",
-					},
-					{
-						title: "Project Structure",
-						url: "#",
-					},
-				],
+				file: "README.md",
+				state: "M",
 			},
 			{
-				title: "Building Your Application",
-				url: "#",
-				items: [
-					{
-						title: "Routing",
-						url: "#",
-					},
-					{
-						title: "Data Fetching",
-						url: "#",
-						isActive: true,
-					},
-					{
-						title: "Rendering",
-						url: "#",
-					},
-					{
-						title: "Caching",
-						url: "#",
-					},
-					{
-						title: "Styling",
-						url: "#",
-					},
-					{
-						title: "Optimizing",
-						url: "#",
-					},
-					{
-						title: "Configuring",
-						url: "#",
-					},
-					{
-						title: "Testing",
-						url: "#",
-					},
-					{
-						title: "Authentication",
-						url: "#",
-					},
-					{
-						title: "Deploying",
-						url: "#",
-					},
-					{
-						title: "Upgrading",
-						url: "#",
-					},
-					{
-						title: "Examples",
-						url: "#",
-					},
-				],
+				file: "routes/+page.svelte",
+				state: "U",
 			},
 			{
-				title: "API Reference",
-				url: "#",
-				items: [
-					{
-						title: "Components",
-						url: "#",
-					},
-					{
-						title: "File Conventions",
-						url: "#",
-					},
-					{
-						title: "Functions",
-						url: "#",
-					},
-					{
-						title: "next.config.js Options",
-						url: "#",
-					},
-					{
-						title: "CLI",
-						url: "#",
-					},
-					{
-						title: "Edge Runtime",
-						url: "#",
-					},
-				],
-			},
-			{
-				title: "Architecture",
-				url: "#",
-				items: [
-					{
-						title: "Accessibility",
-						url: "#",
-					},
-					{
-						title: "Fast Refresh",
-						url: "#",
-					},
-					{
-						title: "Next.js Compiler",
-						url: "#",
-					},
-					{
-						title: "Supported Browsers",
-						url: "#",
-					},
-					{
-						title: "Turbopack",
-						url: "#",
-					},
-				],
-			},
-			{
-				title: "Community",
-				url: "#",
-				items: [
-					{
-						title: "Contribution Guide",
-						url: "#",
-					},
-				],
+				file: "routes/+layout.svelte",
+				state: "M",
 			},
 		],
+		tree: [
+			["lib", ["components", "button.svelte", "card.svelte"], "utils.ts"],
+			[
+				"routes",
+				["hello", "+page.svelte", "+page.ts"],
+				"+page.svelte",
+				"+page.server.ts",
+				"+layout.svelte",
+			],
+			["static", "favicon.ico", "svelte.svg"],
+			"eslint.config.js",
+			".gitignore",
+			"svelte.config.js",
+			"tailwind.config.js",
+			"package.json",
+			"README.md",
+		],
 	};
+</script>
+
+<script lang="ts">
+	import * as Collapsible from "$lib/components/ui/collapsible/index.js";
+	import * as Sidebar from "$lib/components/ui/sidebar/index.js";
+	import ChevronRight from "lucide-svelte/icons/chevron-right";
+	import File from "lucide-svelte/icons/file";
+	import Folder from "lucide-svelte/icons/folder";
+	import type { ComponentProps } from "svelte";
 
 	let { ref = $bindable(null), ...restProps }: ComponentProps<typeof Sidebar.Root> = $props();
 </script>
@@ -149,33 +49,27 @@
 <Sidebar.Root bind:ref {...restProps}>
 	<Sidebar.Content>
 		<Sidebar.Group>
-			<Sidebar.GroupLabel>Table of Contents</Sidebar.GroupLabel>
+			<Sidebar.GroupLabel>Changes</Sidebar.GroupLabel>
 			<Sidebar.GroupContent>
 				<Sidebar.Menu>
-					{#each data.navMain as item (item.title)}
+					{#each data.changes as item, index (index)}
 						<Sidebar.MenuItem>
-							<Sidebar.MenuButton class="font-medium">
-								{#snippet child({ props })}
-									<a href={item.url} {...props}>
-										{item.title}
-									</a>
-								{/snippet}
+							<Sidebar.MenuButton>
+								<File />
+								{item.file}
 							</Sidebar.MenuButton>
-							{#if item.items?.length}
-								<Sidebar.MenuSub>
-									{#each item.items as subItem (subItem.title)}
-										<Sidebar.MenuSubItem>
-											<Sidebar.MenuSubButton
-												href={subItem.url}
-												isActive={subItem.isActive}
-											>
-												{subItem.title}
-											</Sidebar.MenuSubButton>
-										</Sidebar.MenuSubItem>
-									{/each}
-								</Sidebar.MenuSub>
-							{/if}
+							<Sidebar.MenuBadge>{item.state}</Sidebar.MenuBadge>
 						</Sidebar.MenuItem>
+					{/each}
+				</Sidebar.Menu>
+			</Sidebar.GroupContent>
+		</Sidebar.Group>
+		<Sidebar.Group>
+			<Sidebar.GroupLabel>Files</Sidebar.GroupLabel>
+			<Sidebar.GroupContent>
+				<Sidebar.Menu>
+					{#each data.tree as item, index (index)}
+						{@render Tree({ item })}
 					{/each}
 				</Sidebar.Menu>
 			</Sidebar.GroupContent>
@@ -183,3 +77,41 @@
 	</Sidebar.Content>
 	<Sidebar.Rail />
 </Sidebar.Root>
+
+<!-- eslint-disable-next-line @typescript-eslint/no-explicit-any -->
+{#snippet Tree({ item }: { item: string | any[] })}
+	{@const [name, ...items] = Array.isArray(item) ? item : [item]}
+	{#if !items.length}
+		<Sidebar.MenuButton
+			isActive={name === "button.svelte"}
+			class="data-[active=true]:bg-transparent"
+		>
+			<File />
+			{name}
+		</Sidebar.MenuButton>
+	{:else}
+		<Sidebar.MenuItem>
+			<Collapsible.Root
+				class="group/collapsible [&[data-state=open]>button>svg:first-child]:rotate-90"
+				open={name === "lib" || name === "components"}
+			>
+				<Collapsible.Trigger>
+					{#snippet child({ props })}
+						<Sidebar.MenuButton {...props}>
+							<ChevronRight className="transition-transform" />
+							<Folder />
+							{name}
+						</Sidebar.MenuButton>
+					{/snippet}
+				</Collapsible.Trigger>
+				<Collapsible.Content>
+					<Sidebar.MenuSub>
+						{#each items as subItem, index (index)}
+							{@render Tree({ item: subItem })}
+						{/each}
+					</Sidebar.MenuSub>
+				</Collapsible.Content>
+			</Collapsible.Root>
+		</Sidebar.MenuItem>
+	{/if}
+{/snippet}
