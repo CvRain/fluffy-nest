@@ -4,8 +4,9 @@
 	import Inbox from 'lucide-svelte/icons/inbox';
 	import Search from 'lucide-svelte/icons/search';
 	import Settings from 'lucide-svelte/icons/settings';
+	import { ChevronDown, ChevronUp } from 'lucide-svelte';
 	import * as Sidebar from '$lib/components/ui/sidebar/index.js';
-	import { SidebarGroup, SidebarGroupLabel, SidebarMenu, SidebarMenuItem } from '$lib/components/ui/sidebar/index.js';
+	import { DropdownMenu } from 'bits-ui';
 
 	// Menu items.
 	const items = [
@@ -35,21 +36,6 @@
 			icon: Settings
 		}
 	];
-
-	const fruits = [
-		{
-			title: 'Apple',
-			url: '#'
-		},
-		{
-			title: 'Banana',
-			url: '#'
-		},
-		{
-			title: 'Cherry',
-			url: '#'
-		}
-	];
 </script>
 
 <Sidebar.Root>
@@ -73,21 +59,40 @@
 				</Sidebar.Menu>
 			</Sidebar.GroupContent>
 		</Sidebar.Group>
-		<SidebarGroup>
-			<SidebarGroupLabel>Another Group</SidebarGroupLabel>
-			<Sidebar.GroupContent>
-				<SidebarMenu>
-					{#each fruits as fruit (fruit.title)}
-						<SidebarMenuItem>
-							<Sidebar.MenuButton>
-								{#snippet child({ props })}
-									<span>{fruit.title}</span>
-								{/snippet}
-							</Sidebar.MenuButton>
-						</SidebarMenuItem>
-					{/each}
-				</SidebarMenu>
-			</Sidebar.GroupContent>
-		</SidebarGroup>
 	</Sidebar.Content>
+
+
+	<Sidebar.Footer>
+		<Sidebar.Menu>
+			<Sidebar.MenuItem>
+				<DropdownMenu.Root>
+					<DropdownMenu.Trigger>
+						{#snippet child({ props })}
+							<Sidebar.MenuButton
+								{...props}
+								class="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
+							>
+								Username
+								<ChevronUp class="ml-auto" />
+							</Sidebar.MenuButton>
+						{/snippet}
+					</DropdownMenu.Trigger>
+					<DropdownMenu.Content
+						side="top"
+						class="w-[--bits-dropdown-menu-anchor-width]"
+					>
+						<DropdownMenu.Item>
+							<span>Account</span>
+						</DropdownMenu.Item>
+						<DropdownMenu.Item>
+							<span>Billing</span>
+						</DropdownMenu.Item>
+						<DropdownMenu.Item>
+							<span>Sign out</span>
+						</DropdownMenu.Item>
+					</DropdownMenu.Content>
+				</DropdownMenu.Root>
+			</Sidebar.MenuItem>
+		</Sidebar.Menu>
+	</Sidebar.Footer>
 </Sidebar.Root>
