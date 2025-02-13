@@ -1,31 +1,28 @@
 // import axios from 'axios';
 // import {API_BASE_URL} from '$lib/config';
 import { type Actions, fail } from '@sveltejs/kit';
-import { redirect } from '@sveltejs/kit';
+import type { PageServerLoad } from '../../../../.svelte-kit/types/src/routes/auth/login/$types';
+import { superValidate } from 'sveltekit-superforms';
+import { zod } from 'sveltekit-superforms/adapters';
+import { loginFormSchema } from '../schema';
 
-const mockUsers = [
-	{email: "admin@admin.com", password: "admin123"}
-]
+export const load: PageServerLoad = async () => {
+	return {
+		form: await superValidate(zod(loginFormSchema))
+	};
+};
 
 export const actions: Actions = {
-	default: async ({ request }) => {
-		console.debug("login request")
-
-		const data = await request.formData()
-		const { email, password } = Object.fromEntries(data.entries());
-
-		console.debug("login request", email, password)
-
-		if(!email || !password){
-			return fail(400, {error: '请输入账号和密码'});
+	default: async (event) => {
+		const form = await superValidate(event, zod(loginFormSchema));
+		if (!form.valid) {
+			return fail(400, {
+				form
+			});
 		}
-
-		const user = mockUsers.find(u => u.email === email && u.password === password);
-		if(!user){
-			return fail(400, {error: '账号或密码错误'});
-		}
-
-		throw redirect(302, '/craft_table');
+		return {
+			form
+		};
 	}
 };
 

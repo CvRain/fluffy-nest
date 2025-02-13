@@ -5,7 +5,7 @@
 	import { Label } from '$lib/components/ui/label';
 	import axios from 'axios';
 	import { goto } from '$app/navigation';
-  import { fade } from 'svelte/transition';
+	import { fade } from 'svelte/transition';
 
 	let password: string = '';
 	let confirmPassword: string = '';
@@ -20,9 +20,9 @@
 
 	const handleRegister = async () => {
 		let data = JSON.stringify({
-			'name': name,
-			'password': password,
-			'email': email
+			name: name,
+			password: password,
+			email: email
 		});
 
 		const config = {
@@ -35,10 +35,10 @@
 		};
 
 		axios(config)
-			.then(function(response) {
+			.then(function (response) {
 				console.log(JSON.stringify(response.data));
 			})
-			.catch(function(error) {
+			.catch(function (error) {
 				console.log(error);
 			});
 	};
@@ -64,61 +64,60 @@
 		const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 		return re.test(email);
 	};
-
-
 </script>
 
-
 <main transition:fade>
-  <Card.Root class="mx-auto max-w-sm">
-    <Card.Header>
-      <Card.Title class="text-2xl">Register</Card.Title>
-      <Card.Description>Let's create your account</Card.Description>
-    </Card.Header>
-    <Card.Content>
-      <div class="grid gap-4">
-        <div class="grid gap-2">
-          <Label for="email">Email</Label>
-          <Input id="email" type="email" placeholder="m@example.com" required bind:value={email} />
-          {#if emailError}
-            <p class="text-red-500 text-sm">{emailError}</p>
-          {/if}
-        </div>
-        <div class="grid gap-2">
-          <Label for="name">Name</Label>
-          <Input id="name" type="text" placeholder="unknown" required bind:value={name} />
-        </div>
-        <div class="grid gap-2">
-          <div class="flex items-center">
-            <Label for="password">Password</Label>
-          </div>
-          <Input id="password" type="password" required bind:value={password} />
-        </div>
-        <div class="grid gap-2">
-          <div class="flex items-center">
-            <Label for="confirm-password">Confirm password</Label>
-          </div>
-          <Input id="confirm-password" type="password" required bind:value={confirmPassword} />
-          {#if passwordError}
-            <p class="text-red-500 text-sm">{passwordError}</p>
-          {/if}
-        </div>
-        <Button type="submit" class="w-full" disabled={!isFormValid()} onclick={handleRegister}>Sign up</Button>
-      </div>
-      <div class="mt-4 text-center text-sm">
-        Account exist?
-        <button class="underline" on:click={toggleView}>Sign in</button>
-      </div>
-    </Card.Content>
-  </Card.Root>
+	<Card.Root class="mx-auto max-w-sm">
+		<Card.Header>
+			<Card.Title class="text-2xl">Register</Card.Title>
+			<Card.Description>Let's create your account</Card.Description>
+		</Card.Header>
+		<Card.Content>
+			<div class="grid gap-4">
+				<div class="grid gap-2">
+					<Label for="email">Email</Label>
+					<Input id="email" type="email" placeholder="m@example.com" required bind:value={email} />
+					{#if emailError}
+						<p class="text-sm text-red-500">{emailError}</p>
+					{/if}
+				</div>
+				<div class="grid gap-2">
+					<Label for="name">Name</Label>
+					<Input id="name" type="text" placeholder="unknown" required bind:value={name} />
+				</div>
+				<div class="grid gap-2">
+					<div class="flex items-center">
+						<Label for="password">Password</Label>
+					</div>
+					<Input id="password" type="password" required bind:value={password} />
+				</div>
+				<div class="grid gap-2">
+					<div class="flex items-center">
+						<Label for="confirm-password">Confirm password</Label>
+					</div>
+					<Input id="confirm-password" type="password" required bind:value={confirmPassword} />
+					{#if passwordError}
+						<p class="text-sm text-red-500">{passwordError}</p>
+					{/if}
+				</div>
+				<Button type="submit" class="w-full" disabled={!isFormValid()} onclick={handleRegister}
+					>Sign up</Button
+				>
+			</div>
+			<div class="mt-4 text-center text-sm">
+				Account exist?
+				<button class="underline" on:click={toggleView}>Sign in</button>
+			</div>
+		</Card.Content>
+	</Card.Root>
 </main>
 
 <style>
-  main {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    min-height: 100vh;
-  }
+	main {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		justify-content: center;
+		min-height: 100vh;
+	}
 </style>

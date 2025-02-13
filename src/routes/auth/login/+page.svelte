@@ -1,65 +1,48 @@
 <script lang="ts">
-	import { Button } from '$lib/components/ui/button';
-	import * as Card from '$lib/components/ui/card';
-	import { Input } from '$lib/components/ui/input';
-	import { Label } from '$lib/components/ui/label';
-	import { goto } from '$app/navigation'; // 导入goto用于页面跳转
 	import { fade } from 'svelte/transition';
-	import type { ActionData } from './$types';
-	import { enhance } from '$app/forms';
+	import type { PageData, PageServerLoad } from './$types';
+	import { zod } from 'sveltekit-superforms/adapters';
+	import { superValidate } from 'sveltekit-superforms';
+	import { loginFormSchema } from '../schema';
+	import * as Card from '$lib/components/ui/card';
+	import { CardContent, CardDescription, CardHeader, CardTitle } from '$lib/components/ui/card';
+	import PageLogin from './page-login.svelte';
+	import CardFooter from '$lib/components/ui/card/card-footer.svelte';
+	import { goto } from '$app/navigation';
 
-	export let form: ActionData;
-
-	const toggleView = () => {
-		goto('/auth/register');
+	export const load: PageServerLoad = async () => {
+		return {
+			from: await superValidate(zod(loginFormSchema))
+		};
 	};
 
+	let { data }: { data: PageData } = $props();
 </script>
 
 <main transition:fade>
-
-	{#if form?.error}
-		<div class="bg-red-500 text-white p-4 rounded-md mb-4">
-			{form.error}
-		</div>
-	{/if}
-
-
 	<Card.Root class="mx-auto max-w-sm">
-		<Card.Header>
-			<Card.Title class="text-2xl">Login</Card.Title>
-			<Card.Description>Enter your email below to login to your account</Card.Description>
-		</Card.Header>
-		<Card.Content>
-			<form method="POST" use:enhance>
-				<div class="grid gap-4">
-					<div class="grid gap-2">
-						<Label for="email">Email</Label>
-						<Input id="email" type="email" placeholder="m@example.com" required />
-					</div>
-					<div class="grid gap-2">
-						<div class="flex items-center">
-							<Label for="password">Password</Label>
-						</div>
-						<Input id="password" type="password" required autocomplete="off" />
-					</div>
-					<Button type="submit" class="w-full" >Login</Button>
-				</div>
-				<div class="mt-4 text-center text-sm">
-					Don&apos;t have an account?
-					<button class="underline" on:click={toggleView}>Sign up</button>
-				</div>
-			</form>
-		</Card.Content>
+		<CardHeader>
+			<CardTitle class="text-2xl">Login</CardTitle>
+			<CardDescription>Enter your email below to login to your account</CardDescription>
+		</CardHeader>
+		<CardContent>
+			<PageLogin {data} />
+		</CardContent>
+		<CardFooter>
+			<div class="mt-4 text-center text-sm text-muted-foreground flex">
+				Don't have an account?
+				<button onclick={() => goto('/auth/register')} class="underline">Register here</button>
+			</div>
+		</CardFooter>
 	</Card.Root>
 </main>
 
 <style>
-    main {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        min-height: 100vh;
-    }
+	main {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		justify-content: center;
+		min-height: 100vh;
+	}
 </style>

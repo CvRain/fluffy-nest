@@ -5,7 +5,6 @@
 
 {@render children()}
 
+<main>
 
-<style>
-
-</style>
+</main>
