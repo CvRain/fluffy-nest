@@ -6,7 +6,7 @@
 	import { loginFormSchema } from '../schema';
 	import * as Card from '$lib/components/ui/card';
 	import { CardContent, CardDescription, CardHeader, CardTitle } from '$lib/components/ui/card';
-	import PageLogin from './page-login.svelte';
+	import MyLoginForm from "./my-login-form.svelte"
 	import CardFooter from '$lib/components/ui/card/card-footer.svelte';
 	import { goto } from '$app/navigation';
 
@@ -26,7 +26,7 @@
 			<CardDescription>Enter your email below to login to your account</CardDescription>
 		</CardHeader>
 		<CardContent>
-			<PageLogin {data} />
+			<MyLoginForm {data} />
 		</CardContent>
 		<CardFooter>
 			<div class="mt-4 text-center text-sm text-muted-foreground flex">

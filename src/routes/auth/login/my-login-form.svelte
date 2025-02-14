@@ -5,7 +5,7 @@
 	import { type Infer, superForm, type SuperValidated } from 'sveltekit-superforms';
 	import { zodClient } from 'sveltekit-superforms/adapters';
 	import { FormField, FormLabel } from '$lib/components/ui/form';
-	import { FormButton, FormControl, FormDescription } from '$lib/components/ui/form/index.js';
+	import { FormButton, FormControl } from '$lib/components/ui/form/index.js';
 
 	let {
 		data
