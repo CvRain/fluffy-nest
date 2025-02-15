@@ -2,21 +2,8 @@ import axios from 'axios';
 import type { PageServerLoad } from './$types';
 
 export interface ImageData {
-	startDate: string,
-	fullStartDate: string,
-	endDate: string,
 	url: string,
-	urlBase: string,
-	copyright: string,
-	copyrightLink: string,
 	title: string,
-	quiz: string,
-	wp: boolean,
-	hsh: string,
-	drk: number,
-	top: number,
-	bot: number,
-	hs: []
 }
 
 const loadImage = async () => {

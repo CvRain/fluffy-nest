@@ -1,28 +1,37 @@
-// import axios from 'axios';
-// import {API_BASE_URL} from '$lib/config';
 import { type Actions, fail } from '@sveltejs/kit';
 import type {PageServerLoad} from './$types';
 import { superValidate } from 'sveltekit-superforms';
 import { zod } from 'sveltekit-superforms/adapters';
 import { loginFormSchema } from '../schema';
+import { API_BASE_URL } from '$lib/config';
+import axios from 'axios';
 
 export const load: PageServerLoad = async () => {
+	console.log('Login page loaded');
 	return {
 		form: await superValidate(zod(loginFormSchema))
 	};
 };
 
 export const actions: Actions = {
-	default: async (event) => {
+	login: async (event) => {
 		const form = await superValidate(event, zod(loginFormSchema));
-		if (!form.valid) {
-			return fail(400, {
-				form
-			});
+		console.log('form', form);
+		if (!form.valid) { // 表单验证失败
+			return fail(400, { form });
 		}
-		return {
-			form
-		};
+		return handleLogin(form.data)
+	},
+} satisfies Actions;
+
+const handleLogin = async (formData: { email: string; password: string }) => {
+	try {
+		const requestUrl = `${API_BASE_URL}/user/login`;
+		const response = await axios.post(requestUrl, formData);
+		return response.data;
+	} catch (error) {
+		console.error('Error during login:', error);
+		throw error;
 	}
 };
 
@@ -47,25 +56,3 @@ export const actions: Actions = {
 // 		});
 // }
 //
-// export const handleLogin = async () => {
-// 	try {
-// 		const requestUrl = `${API_BASE_URL}/api/user/login`;
-// 		const response = await fetch(requestUrl, {
-// 			method: 'POST',
-// 			headers: {
-// 				'Content-Type': 'application/json'
-// 			},
-// 			body: JSON.stringify({ email, password })
-// 		});
-//
-// 		if (response.ok) {
-// 			const data = await response.json();
-// 			console.log('Login successful:', data);
-// 			await goto('/craft_table'); // 登录成功后跳转到craft_table页面
-// 		} else {
-// 			console.error('Login failed:', response.statusText);
-// 		}
-// 	} catch (error) {
-// 		console.error('Error during login:', error);
-// 	}
-// };
