@@ -56,7 +56,6 @@
 		</CardFooter>
 	</Card.Root>
 </main>
-<SuperDebug data={form} />
 
 <style>
     main {

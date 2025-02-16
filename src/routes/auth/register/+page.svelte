@@ -1,69 +1,23 @@
 <script lang="ts">
-	import { Button } from '$lib/components/ui/button';
-	import * as Card from '$lib/components/ui/card';
-	import { Input } from '$lib/components/ui/input';
-	import { Label } from '$lib/components/ui/label';
-	import axios from 'axios';
-	import { goto } from '$app/navigation';
 	import { fade } from 'svelte/transition';
+	import type { PageServerData } from './$types';
+	import * as Card from '$lib/components/ui/card/index';
+	import CardFooter from '$lib/components/ui/card/card-footer.svelte';
+	import { goto } from '$app/navigation';
+	import { FormButton, FormField, FormLabel, FormControl } from '$lib/components/ui/form/index.js';
+	import SuperDebug, { superForm } from 'sveltekit-superforms';
+	import { zodClient } from 'sveltekit-superforms/adapters';
+	import { registerFormSchema } from '../schema';
+	import { Input } from '$lib/components/ui/input';
 
-	let password: string = '';
-	let confirmPassword: string = '';
-	let email: string = '';
-	let name: string = '';
-	let emailError: string = '';
-	let passwordError: string = '';
+	let { data }: { data: PageServerData } = $props();
 
-	const toggleView = () => {
-		goto('/auth/login');
-	};
+	const form = superForm(data.form, {
+		validators: zodClient(registerFormSchema)
+	});
 
-	const handleRegister = async () => {
-		let data = JSON.stringify({
-			name: name,
-			password: password,
-			email: email
-		});
+	const { form: formData, enhance } = form;
 
-		const config = {
-			method: 'post',
-			url: 'http://localhost:4000/api/user/append',
-			headers: {
-				'Content-Type': 'application/json'
-			},
-			data: data
-		};
-
-		axios(config)
-			.then(function (response) {
-				console.log(JSON.stringify(response.data));
-			})
-			.catch(function (error) {
-				console.log(error);
-			});
-	};
-
-	const isFormValid = () => {
-		emailError = '';
-		passwordError = '';
-
-		if (!validateEmail(email)) {
-			emailError = 'Please enter a valid email address.';
-			return false;
-		}
-
-		if (password !== confirmPassword) {
-			passwordError = 'Passwords do not match.';
-			return false;
-		}
-
-		return true;
-	};
-
-	const validateEmail = (email: string) => {
-		const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-		return re.test(email);
-	};
 </script>
 
 <main transition:fade>
@@ -73,51 +27,57 @@
 			<Card.Description>Let's create your account</Card.Description>
 		</Card.Header>
 		<Card.Content>
-			<div class="grid gap-4">
-				<div class="grid gap-2">
-					<Label for="email">Email</Label>
-					<Input id="email" type="email" placeholder="m@example.com" required bind:value={email} />
-					{#if emailError}
-						<p class="text-sm text-red-500">{emailError}</p>
-					{/if}
-				</div>
-				<div class="grid gap-2">
-					<Label for="name">Name</Label>
-					<Input id="name" type="text" placeholder="unknown" required bind:value={name} />
-				</div>
-				<div class="grid gap-2">
-					<div class="flex items-center">
-						<Label for="password">Password</Label>
+			<form method="POST" use:enhance action="?/register">
+				<FormField {form} name="email">
+					<FormControl>
+						{#snippet children({ props })}
+							<FormLabel>Email</FormLabel>
+							<Input {...props} bind:value={$formData.email} type="email" placeholder="john@doe.com" />
+						{/snippet}
+					</FormControl>
+				</FormField>
+				<FormField {form} name="name">
+					<FormControl>
+						{#snippet children({ props })}
+							<FormLabel>Name</FormLabel>
+							<Input {...props} bind:value={$formData.name} type="text" placeholder="John Doe" />
+						{/snippet}
+					</FormControl>
+				</FormField>
+				<FormField {form} name="password">
+					<FormControl>
+						{#snippet children({ props })}
+							<FormLabel>Password</FormLabel>
+							<Input {...props} bind:value={$formData.password} type="password" placeholder="" />
+						{/snippet}
+					</FormControl>
+				</FormField>
+				<FormField {form} name="confirmPassword">
+					<FormControl>
+						{#snippet children({ props })}
+							<FormLabel>Confirm password</FormLabel>
+							<Input {...props} bind:value={$formData.confirmPassword} type="password" placeholder="" />
+						{/snippet}
+					</FormControl>
+					<FormButton type="submit" class="w-full" style="margin-top: 1rem;">Login</FormButton>
+				</FormField>
+				<CardFooter>
+					<div class="mt-4 text-center text-sm text-muted-foreground flex">
+						Already have an account?
+						<button onclick={() => goto('/auth/login')} class="underline">Login here</button>
 					</div>
-					<Input id="password" type="password" required bind:value={password} />
-				</div>
-				<div class="grid gap-2">
-					<div class="flex items-center">
-						<Label for="confirm-password">Confirm password</Label>
-					</div>
-					<Input id="confirm-password" type="password" required bind:value={confirmPassword} />
-					{#if passwordError}
-						<p class="text-sm text-red-500">{passwordError}</p>
-					{/if}
-				</div>
-				<Button type="submit" class="w-full" disabled={!isFormValid()} onclick={handleRegister}
-					>Sign up</Button
-				>
-			</div>
-			<div class="mt-4 text-center text-sm">
-				Account exist?
-				<button class="underline" on:click={toggleView}>Sign in</button>
-			</div>
+				</CardFooter>
+			</form>
 		</Card.Content>
 	</Card.Root>
 </main>
 
 <style>
-	main {
-		display: flex;
-		flex-direction: column;
-		align-items: center;
-		justify-content: center;
-		min-height: 100vh;
-	}
+    main {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        min-height: 100vh;
+    }
 </style>

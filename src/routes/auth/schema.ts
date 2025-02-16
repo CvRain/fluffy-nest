@@ -12,5 +12,5 @@ export const registerFormSchema = z.object({
 	confirmPassword: z.string(),
 });
 
-export type LoginFormSchema = typeof loginFormSchema;
-export type RegisterFormSchema = typeof registerFormSchema;
+export type LoginFormSchema = z.infer<typeof loginFormSchema>;
+export type RegisterFormSchema = z.infer<typeof registerFormSchema>;
