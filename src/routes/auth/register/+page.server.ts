@@ -2,7 +2,7 @@ import { type Actions, fail } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 import { superValidate } from 'sveltekit-superforms';
 import { zod } from 'sveltekit-superforms/adapters';
-import { type RegisterFormSchema, registerFormSchema } from '../schema';
+import { type RegisterFormSchema, registerFormSchema} from '../schema';
 import { API_BASE_URL } from '$lib/config';
 import axios from 'axios';
 
@@ -35,8 +35,3 @@ const registerHandle = async (formData: RegisterFormSchema) => {
 		throw error;
 	}
 };
-
-//todo 检查后端是否支持注册
-export const checkEnableRegister = async () =>{
-
-}

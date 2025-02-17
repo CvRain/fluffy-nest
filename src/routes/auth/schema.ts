@@ -12,5 +12,13 @@ export const registerFormSchema = z.object({
 	confirmPassword: z.string(),
 });
 
+
+export interface RequestResponse{
+	code: number;
+	data: string;
+	message: string;
+	status: string;
+}
+
 export type LoginFormSchema = z.infer<typeof loginFormSchema>;
 export type RegisterFormSchema = z.infer<typeof registerFormSchema>;
