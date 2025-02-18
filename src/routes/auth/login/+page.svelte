@@ -1,7 +1,9 @@
 <script lang="ts">
-	import { fade } from 'svelte/transition';
+	import { fade,fly } from 'svelte/transition';
 	import type { PageServerData } from './$types';
 	import * as Card from '$lib/components/ui/card/index';
+	import * as Alert from "$lib/components/ui/alert/index";
+	import { CircleAlert } from 'lucide-svelte';
 	import { CardContent, CardDescription, CardHeader, CardTitle } from '$lib/components/ui/card';
 	import CardFooter from '$lib/components/ui/card/card-footer.svelte';
 	import { goto } from '$app/navigation';
@@ -10,15 +12,50 @@
 	import { zodClient } from 'sveltekit-superforms/adapters';
 	import { loginFormSchema } from '../schema';
 	import { Input } from '$lib/components/ui/input';
+	import { browser } from '$app/environment';
 
 	let { data }: { data: PageServerData } = $props();
+	let showAlert = $state(false);
+	let alertMessage = $state('');
+	let alertType: 'default' | 'destructive' = $state('default');
 
 	const form = superForm(data.form, {
-		validators: zodClient(loginFormSchema)
+		validators: zodClient(loginFormSchema),
+		onResult: ({ result }) => {
+			showAlert = true;
+			if (result.type === 'success') {
+				alertType = 'default';
+				alertMessage = result.data.message;
+				if (browser) {
+					localStorage.setItem('token', result.data.token);
+					setTimeout(() => {
+						goto('/craft_table');
+					}, 1000);
+				}
+			} else {
+				alertType = 'destructive';
+				alertMessage = result.data.message;
+			}
+			setTimeout(() => {
+				showAlert = false;
+			}, 5000);
+		}
 	});
 
 	const { form: formData, enhance } = form;
 </script>
+
+<div class="fixed top-4 right-4 z-50 w-96" in:fly={{duration:300, x:300}} out:fade>
+	{#if showAlert}
+		<Alert.Root variant={alertType}>
+			<CircleAlert class="size-4" />
+			<Alert.Title>{alertType === 'destructive' ? 'Error' : 'Success'}</Alert.Title>
+			<Alert.Description>
+				{alertMessage}
+			</Alert.Description>
+		</Alert.Root>
+	{/if}
+</div>
 
 <main transition:fade>
 	<Card.Root class="mx-auto max-w-sm">

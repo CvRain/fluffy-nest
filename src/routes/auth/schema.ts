@@ -1,4 +1,5 @@
 import {z} from "zod";
+import type {BaseResponse} from "$lib/schema";
 
 export const loginFormSchema = z.object({
 	email: z.string().email(),
@@ -12,12 +13,10 @@ export const registerFormSchema = z.object({
 	confirmPassword: z.string(),
 });
 
-
-export interface RequestResponse{
-	code: number;
-	data: string;
-	message: string;
-	status: string;
+export interface LoginResponse extends BaseResponse{
+	email: string;
+	id: string;
+	token: string
 }
 
 export type LoginFormSchema = z.infer<typeof loginFormSchema>;
