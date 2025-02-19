@@ -3,7 +3,7 @@
 	import type { PageServerData } from './$types';
 	import * as Card from '$lib/components/ui/card/index';
 	import * as Alert from "$lib/components/ui/alert/index";
-	import { CircleAlert } from 'lucide-svelte';
+	import { CircleAlert, UserRound } from 'lucide-svelte';
 	import { CardContent, CardDescription, CardHeader, CardTitle } from '$lib/components/ui/card';
 	import CardFooter from '$lib/components/ui/card/card-footer.svelte';
 	import { goto } from '$app/navigation';
@@ -19,27 +19,37 @@
 	let alertMessage = $state('');
 	let alertType: 'default' | 'destructive' = $state('default');
 
+	interface UserData {
+		email: string;
+		id: string;
+		token: string;
+	}
+
 	const form = superForm(data.form, {
 		validators: zodClient(loginFormSchema),
-		onResult: ({ result }) => {
+		onResult: ({result}) => {
+			const response = result.data as unknown as LoginResponse;
+			console.log("response: ", response);
+			
 			showAlert = true;
-			if (result.type === 'success') {
+			if(response.code === 200){
 				alertType = 'default';
-				alertMessage = result.data.message;
-				if (browser) {
-					localStorage.setItem('token', result.data.token);
-					setTimeout(() => {
-						goto('/craft_table');
-					}, 1000);
+				alertMessage = response.message;
+
+				if(browser){
+					localStorage.setItem('token', response.token);
+					localStorage.setItem('email', response.email);
+					localStorage.setItem('id', response.id);
 				}
+
+				setTimeout(() => {
+					goto('/craft_table');
+				}, 3000);
 			} else {
 				alertType = 'destructive';
-				alertMessage = result.data.message;
+				alertMessage = response.message;
 			}
-			setTimeout(() => {
-				showAlert = false;
-			}, 5000);
-		}
+		},
 	});
 
 	const { form: formData, enhance } = form;
