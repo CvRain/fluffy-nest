@@ -1,14 +1,20 @@
 <script lang="ts">
-	import { fade,fly } from 'svelte/transition';
+	import { fade, fly } from 'svelte/transition';
 	import type { PageServerData } from './$types';
 	import * as Card from '$lib/components/ui/card/index';
-	import * as Alert from "$lib/components/ui/alert/index";
+	import * as Alert from '$lib/components/ui/alert/index';
 	import { CircleAlert, UserRound } from 'lucide-svelte';
 	import { CardContent, CardDescription, CardHeader, CardTitle } from '$lib/components/ui/card';
 	import CardFooter from '$lib/components/ui/card/card-footer.svelte';
 	import { goto } from '$app/navigation';
-	import { FormButton, FormField, FormLabel, FormControl, FormFieldErrors } from '$lib/components/ui/form/index.js';
-	import SuperDebug, { superForm } from 'sveltekit-superforms';
+	import {
+		FormButton,
+		FormField,
+		FormLabel,
+		FormControl,
+		FormFieldErrors
+	} from '$lib/components/ui/form/index.js';
+	import { superForm } from 'sveltekit-superforms';
 	import { zodClient } from 'sveltekit-superforms/adapters';
 	import { loginFormSchema } from '../schema';
 	import { Input } from '$lib/components/ui/input';
@@ -19,27 +25,23 @@
 	let alertMessage = $state('');
 	let alertType: 'default' | 'destructive' = $state('default');
 
-	interface UserData {
-		email: string;
-		id: string;
-		token: string;
-	}
-
 	const form = superForm(data.form, {
 		validators: zodClient(loginFormSchema),
-		onResult: ({result}) => {
+		onResult: ({ result }) => {
 			const response = result.data as unknown as LoginResponse;
-			console.log("response: ", response);
-			
+			console.log('response: ', response);
+
 			showAlert = true;
-			if(response.code === 200){
+			if (response.code === 200) {
 				alertType = 'default';
 				alertMessage = response.message;
 
-				if(browser){
-					localStorage.setItem('token', response.token);
-					localStorage.setItem('email', response.email);
-					localStorage.setItem('id', response.id);
+				if (browser) {
+					localStorage.setItem('token', response.data.token);
+					console.debug('setItem token: ', response.data.token);
+
+					localStorage.setItem('email', response.data.email);
+					localStorage.setItem('userId', response.data.id);
 				}
 
 				setTimeout(() => {
@@ -49,13 +51,13 @@
 				alertType = 'destructive';
 				alertMessage = response.message;
 			}
-		},
+		}
 	});
 
 	const { form: formData, enhance } = form;
 </script>
 
-<div class="fixed top-4 right-4 z-50 w-96" in:fly={{duration:300, x:300}} out:fade>
+<div class="fixed right-4 top-4 z-50 w-96" in:fly={{ duration: 300, x: 300 }} out:fade>
 	{#if showAlert}
 		<Alert.Root variant={alertType}>
 			<CircleAlert class="size-4" />
@@ -79,7 +81,12 @@
 					<FormControl>
 						{#snippet children({ props })}
 							<FormLabel>Email</FormLabel>
-							<Input {...props} bind:value={$formData.email} type="email" placeholder="john@doe.com" />
+							<Input
+								{...props}
+								bind:value={$formData.email}
+								type="email"
+								placeholder="john@doe.com"
+							/>
 						{/snippet}
 					</FormControl>
 					<FormFieldErrors />
@@ -88,7 +95,7 @@
 					<FormControl>
 						{#snippet children({ props })}
 							<FormLabel>Password</FormLabel>
-							<Input {...props} bind:value={$formData.password} type="password" placeholder="••••••••" />
+							<Input {...props} bind:value={$formData.password} type="password" placeholder="" />
 						{/snippet}
 					</FormControl>
 				</FormField>
@@ -96,7 +103,7 @@
 			</form>
 		</CardContent>
 		<CardFooter>
-			<div class="mt-4 text-center text-sm text-muted-foreground flex">
+			<div class="mt-4 flex text-center text-sm text-muted-foreground">
 				Don't have an account? &nbsp;&nbsp;
 				<button onclick={() => goto('/auth/register')} class="underline">Register here</button>
 			</div>
@@ -105,11 +112,11 @@
 </main>
 
 <style>
-    main {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        min-height: 100vh;
-    }
+	main {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		justify-content: center;
+		min-height: 100vh;
+	}
 </style>

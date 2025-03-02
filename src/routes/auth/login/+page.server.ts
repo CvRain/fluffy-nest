@@ -29,7 +29,6 @@ const handleLogin = async (formData: LoginFormSchema) => {
 	try {
 		const requestUrl = `${API_BASE_URL}/user/login`;
 		const response: LoginResponse = (await axios.post(requestUrl, formData)).data;
-		//console.log('Login response:', response);
 
 		if (response.code !== 200) {
 			return fail(400, {
