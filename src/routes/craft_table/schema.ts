@@ -1,1 +1,5 @@
-import type { BaseResponse } from '$lib/schema';
+export interface TreeDirectoryResponse {
+    children: TreeDirectoryResponse[],
+    name: string,
+    type: string
+}

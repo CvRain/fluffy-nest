@@ -16,9 +16,10 @@
 	} from '$lib/components/ui/form/index.js';
 	import { superForm } from 'sveltekit-superforms';
 	import { zodClient } from 'sveltekit-superforms/adapters';
-	import { loginFormSchema } from '../schema';
+	import { loginFormSchema, type LoginResponse } from '../schema';
 	import { Input } from '$lib/components/ui/input';
 	import { browser } from '$app/environment';
+	import type { BaseResponse } from '$lib/schema';
 
 	let { data }: { data: PageServerData } = $props();
 	let showAlert = $state(false);
@@ -28,7 +29,7 @@
 	const form = superForm(data.form, {
 		validators: zodClient(loginFormSchema),
 		onResult: ({ result }) => {
-			const response = result.data as unknown as LoginResponse;
+			const response:LoginResponse = result.data as unknown as LoginResponse;
 			console.log('response: ', response);
 
 			showAlert = true;
@@ -38,8 +39,6 @@
 
 				if (browser) {
 					localStorage.setItem('token', response.data.token);
-					console.debug('setItem token: ', response.data.token);
-
 					localStorage.setItem('email', response.data.email);
 					localStorage.setItem('userId', response.data.id);
 				}
@@ -51,6 +50,8 @@
 				alertType = 'destructive';
 				alertMessage = response.message;
 			}
+
+			return result;
 		}
 	});
 
