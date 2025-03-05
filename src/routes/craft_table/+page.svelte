@@ -2,24 +2,37 @@
 	import * as Sidebar from '$lib/components/ui/sidebar/index.js';
 	import CraftTableSidebar from '$lib/components/craft_table_sidebar.svelte';
 	import { onMount } from 'svelte';
-	import { goto } from '$app/navigation';
-	import { API_BASE_URL } from '$lib/config';
-	import type { BaseResponse } from '$lib/schema';
 	import { fly, fade } from 'svelte/transition';
 	import * as Alert from '$lib/components/ui/alert';
 	import { CircleAlert } from 'lucide-svelte';
 	import Separator from '$lib/components/ui/separator/separator.svelte';
 	import * as Breadcrumb from '$lib/components/ui/breadcrumb/index';
-	import * as Resizable from '$lib/components/ui/resizable/index';
-	import Textarea from '$lib/components/ui/textarea/textarea.svelte';
-	import MarkdownPreview from '$lib/components/markdown-preview.svelte';
 	import * as Card from '$lib/components/ui/card/index.js';
+	import { Carta, MarkdownEditor, type Plugin } from 'carta-md';
+	import { code } from '@cartamd/plugin-code';
+	import '@cartamd/plugin-code/default.css';
+	import { emoji } from '@cartamd/plugin-emoji';
+	import { slash } from '@cartamd/plugin-slash';
+	import { attachment } from '@cartamd/plugin-attachment';
 
-	let { children } = $props();
 	let showAlert: boolean = $state(false);
 	let alertType: 'default' | 'destructive' = $state('default');
 	let alertMessage = $state('');
 	let markdownText = $state('');
+
+	const carta = new Carta({
+		sanitizer: false,
+		extensions: [
+			emoji(),
+			slash(),
+			code(),
+			attachment({
+				async upload() {
+					return '';
+				}
+			})
+		]
+	});
 
 	onMount(() => {
 		alertType = 'default';
@@ -61,21 +74,14 @@
 			</Breadcrumb.Root>
 		</header>
 		<div class="flex flex-1 flex-col gap-4 p-4">
-			<Resizable.PaneGroup direction="horizontal">
-				<Resizable.Pane>
-					<Card.Root>
-						<Textarea class="marked-exit" bind:value={markdownText} placeholder="Enter markdown here"/>
-					</Card.Root>
-				</Resizable.Pane>
-				<Resizable.Handle />
-				<Resizable.Pane>
-					<MarkdownPreview markdown={markdownText}/>
-				</Resizable.Pane>
-			</Resizable.PaneGroup>
+			<Card.Root>
+				<Card.Content style="height: 100vh">
+					<MarkdownEditor {carta} bind:value={markdownText} theme="github" mode="tabs"/>
+				</Card.Content>
+			</Card.Root>
 		</div>
 	</Sidebar.Inset>
 </Sidebar.Provider>
 
 <style>
-	/* 让TextArea */
 </style>
