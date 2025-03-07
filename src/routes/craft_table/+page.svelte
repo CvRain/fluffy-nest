@@ -8,7 +8,6 @@
 	import Separator from '$lib/components/ui/separator/separator.svelte';
 	import * as Breadcrumb from '$lib/components/ui/breadcrumb/index';
 	import * as Card from '$lib/components/ui/card/index.js';
-	import { Carta, MarkdownEditor, type Plugin } from 'carta-md';
 	import { code } from '@cartamd/plugin-code';
 	import '@cartamd/plugin-code/default.css';
 	import { emoji } from '@cartamd/plugin-emoji';
@@ -76,7 +75,6 @@
 		<div class="flex flex-1 flex-col gap-4 p-4">
 			<Card.Root>
 				<Card.Content style="height: 100vh">
-					<MarkdownEditor {carta} bind:value={markdownText} theme="github" mode="tabs"/>
 				</Card.Content>
 			</Card.Root>
 		</div>
