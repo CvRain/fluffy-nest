@@ -18,9 +18,6 @@
 				class="whitespace-pre-wrap h-full"
 			/>
 		</Card.Content>
-		<Card.Content>
-			{markdownText}
-		</Card.Content>
 	</Card.Root>
 	
 	<Card.Root>

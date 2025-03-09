@@ -1,64 +1,94 @@
 <script lang="ts">
 	import * as Card from '$lib/components/ui/card/index';
 	import MarkdownIt from 'markdown-it';
-	import Shiki from '@shikijs/markdown-it';
 	import { onMount } from 'svelte';
 	import 'katex/dist/katex.min.css';
 	import { full as emoji } from 'markdown-it-emoji';
 	import sanitizeHtml from 'sanitize-html';
-	import 'github-markdown-css'
-	import { bundledLanguages } from 'shiki';
+	import hljs from 'highlight.js';
+	import 'highlight.js/styles/obsidian.css';
+	import 'github-markdown-css/github-markdown.css'
 
-	let {markdownText}: {
+	let {
+		markdownText
+	}: {
 		markdownText: string;
 	} = $props();
 
-	// 状态定义
-	let md = MarkdownIt({
+	let md: MarkdownIt | null = null as MarkdownIt | null;
+
+	let initialized = $state(false);
+	
+	onMount(async () => {
+		// 动态加载语言支持（按需加载）
+		await import('highlight.js/lib/languages/javascript');
+		await import('highlight.js/lib/languages/typescript');
+		await import('highlight.js/lib/languages/css');
+
+		await Promise.all([
+			import('highlight.js/lib/languages/javascript'),
+			import('highlight.js/lib/languages/typescript')
+		]).then(([jsLang, tsLang]) => {
+			hljs.registerLanguage('javascript', jsLang.default);
+			hljs.registerLanguage('typescript', tsLang.default);
+		});
+		
+		// 创建 Markdown 解析器实例
+		md = new MarkdownIt({
 			html: true,
 			linkify: true,
 			breaks: true,
 			typographer: true,
-			xhtmlOut: true
-		});
+			xhtmlOut: true,
+			highlight: (str: string, lang: string) => {
+				if (lang && hljs.getLanguage(lang)) {
+					try {
+						return hljs.highlight(str, {
+							language: lang,
+							ignoreIllegals: true // 忽略无法解析的语法
+						}).value;
+					} catch (e) {
+						console.warn('高亮错误:', e);
+						return str;
+					}
+				}
+				return hljs.highlightAuto(str).value; // 自动检测语言 帅！
+			}
+		}) as MarkdownIt;
 
-	let isLoading = $state(true);
+		md.use(emoji);
 
-	// 使用 $derived 自动追踪依赖
-	const htmlContent = $derived(md && !isLoading ? sanitizeHtml(md.render(markdownText)) : '');
-
-	// 异步初始化
-	onMount(async () => {
-		try {
-			md.use(emoji)
-			.use(await Shiki({
-				themes: {
-					light: 'catppuccin-latte',
-					dark: 'catppuccin-mocha'
-				},
-			}));
-		} catch (error) {
-			console.error('Shiki 初始化失败:', error);
-		} finally {
-			isLoading = false;
-		}
+		initialized = true;
 	});
+
+	const sanitizeOptions = {
+		allowedTags: sanitizeHtml.defaults.allowedTags.concat([
+			'span', 'pre', 'code', 'kbd', 'samp'
+		]),
+		allowedAttributes: {
+			'*': ['class', 'style'],
+			code: ['class*'],
+			span: ['class*']
+		},
+		allowedClasses: {
+			code: [/^language-/, /hljs/],
+			span: [/^hljs-/]
+		}
+	};
+
+	const htmlContent = $derived(
+		initialized && md 
+			? sanitizeHtml(md.render(markdownText), sanitizeOptions)
+			: '<p>Loading code highlighter...</p>'
+	);
 </script>
 
 <Card.Root>
-	<Card.Content class="markdown-body">
-		{#if isLoading}
-			<div class="loading">Rendering...</div>
-		{:else}
-			<div class="preview">
-				{@html htmlContent}
-			</div>
-		{/if}
+	<Card.Content>
+		<div class="preview markdown-body">
+			{@html htmlContent}
+		</div>
 	</Card.Content>
-	//test
-	<div>
-		{markdownText}
-	</div>
 </Card.Root>
 
 <style>
