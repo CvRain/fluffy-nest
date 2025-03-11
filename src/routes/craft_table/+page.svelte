@@ -8,30 +8,14 @@
 	import Separator from '$lib/components/ui/separator/separator.svelte';
 	import * as Breadcrumb from '$lib/components/ui/breadcrumb/index';
 	import * as Card from '$lib/components/ui/card/index.js';
-	import { code } from '@cartamd/plugin-code';
-	import '@cartamd/plugin-code/default.css';
-	import { emoji } from '@cartamd/plugin-emoji';
-	import { slash } from '@cartamd/plugin-slash';
-	import { attachment } from '@cartamd/plugin-attachment';
+	import * as Resizable from '$lib/components/ui/resizable/index.js';
+	import Textarea from '$lib/components/ui/textarea/textarea.svelte';
+	import MarkdownPreview from '$lib/components/markdown-preview.svelte';
 
 	let showAlert: boolean = $state(false);
 	let alertType: 'default' | 'destructive' = $state('default');
 	let alertMessage = $state('');
-	let markdownText = $state('');
-
-	const carta = new Carta({
-		sanitizer: false,
-		extensions: [
-			emoji(),
-			slash(),
-			code(),
-			attachment({
-				async upload() {
-					return '';
-				}
-			})
-		]
-	});
+	let markdownText = $state('# Write your idea~');
 
 	onMount(() => {
 		alertType = 'default';
@@ -74,7 +58,17 @@
 		</header>
 		<div class="flex flex-1 flex-col gap-4 p-4">
 			<Card.Root>
-				<Card.Content style="height: 100vh">
+				<Card.Content>
+					<Resizable.PaneGroup direction="horizontal" class="min-h-[200px] rounded-lg border">
+						<Resizable.Pane>
+							<Textarea placeholder="write your idea~" bind:value={markdownText} class="full-height .hide-scrollbar"
+							></Textarea>
+						</Resizable.Pane>
+						<Resizable.Handle withHandle />
+						<Resizable.Pane defaultSize={45}>
+							<MarkdownPreview {markdownText} />
+						</Resizable.Pane>
+					</Resizable.PaneGroup>
 				</Card.Content>
 			</Card.Root>
 		</div>
@@ -82,4 +76,15 @@
 </Sidebar.Provider>
 
 <style>
+	:global(.full-height) {
+		height: 100vh;
+	}
+
+	:global(.hide-scrollbar) {
+		scrollbar-width: none;
+	}
+
+	:global(.hide-scrollbar)::-webkit-scrollbar {
+		display: none; /* Chrome, Safari and Opera */
+	}
 </style>

@@ -21,7 +21,7 @@
 	</Card.Root>
 	
 	<Card.Root>
-		<Card.Content class="preview-container">
+		<Card.Content class="preview-container">   
 			<MarkdownPreview {markdownText} />
 		</Card.Content>
 	</Card.Root>

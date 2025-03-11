@@ -3,45 +3,53 @@
 	const data = {
 		changes: [
 			{
-				file: "README.md",
-				state: "M",
+				file: 'README.md',
+				state: 'M'
 			},
 			{
-				file: "routes/+page.svelte",
-				state: "U",
+				file: 'routes/+page.svelte',
+				state: 'U'
 			},
 			{
-				file: "routes/+layout.svelte",
-				state: "M",
-			},
+				file: 'routes/+layout.svelte',
+				state: 'M'
+			}
 		],
 		tree: [
-			["lib", ["components", "button.svelte", "card.svelte"], "utils.ts"],
+			['lib', ['components', 'button.svelte', 'card.svelte'], 'utils.ts'],
 			[
-				"routes",
-				["hello", "+page.svelte", "+page.ts"],
-				"+page.svelte",
-				"+page.server.ts",
-				"+layout.svelte",
+				'routes',
+				['hello', '+page.svelte', '+page.ts'],
+				'+page.svelte',
+				'+page.server.ts',
+				'+layout.svelte'
 			],
-			["static", "favicon.ico", "svelte.svg"],
-			"eslint.config.js",
-			".gitignore",
-			"svelte.config.js",
-			"tailwind.config.js",
-			"package.json",
-			"README.md",
-		],
+			['static', 'favicon.ico', 'svelte.svg'],
+			'eslint.config.js',
+			'.gitignore',
+			'svelte.config.js',
+			'tailwind.config.js',
+			'package.json',
+			'README.md'
+		]
+	};
+
+	let user = {
+		name: 'shadcn',
+		email: 'm@example.com',
+		avatar: ''
 	};
 </script>
 
 <script lang="ts">
 	import * as Collapsible from '$lib/components/ui/collapsible/index';
 	import * as Sidebar from '$lib/components/ui/sidebar/index';
-	import ChevronRight from "lucide-svelte/icons/chevron-right";
-	import File from "lucide-svelte/icons/file";
-	import Folder from "lucide-svelte/icons/folder";
-	import type { ComponentProps } from "svelte";
+	import ChevronRight from 'lucide-svelte/icons/chevron-right';
+	import File from 'lucide-svelte/icons/file';
+	import Folder from 'lucide-svelte/icons/folder';
+	import type { ComponentProps } from 'svelte';
+	import { Footer } from './ui/card';
+	import NavUser from './nav-user.svelte';
 
 	let { ref = $bindable(null), ...restProps }: ComponentProps<typeof Sidebar.Root> = $props();
 </script>
@@ -76,6 +84,9 @@
 		</Sidebar.Group>
 	</Sidebar.Content>
 	<Sidebar.Rail />
+	<Sidebar.Footer>
+		<NavUser {user}></NavUser>
+	</Sidebar.Footer>
 </Sidebar.Root>
 
 <!-- eslint-disable-next-line @typescript-eslint/no-explicit-any -->
@@ -83,7 +94,7 @@
 	{@const [name, ...items] = Array.isArray(item) ? item : [item]}
 	{#if !items.length}
 		<Sidebar.MenuButton
-			isActive={name === "button.svelte"}
+			isActive={name === 'button.svelte'}
 			class="data-[active=true]:bg-transparent"
 		>
 			<File />
@@ -93,7 +104,7 @@
 		<Sidebar.MenuItem>
 			<Collapsible.Root
 				class="group/collapsible [&[data-state=open]>button>svg:first-child]:rotate-90"
-				open={name === "lib" || name === "components"}
+				open={name === 'lib' || name === 'components'}
 			>
 				<Collapsible.Trigger>
 					{#snippet child({ props })}

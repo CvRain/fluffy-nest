@@ -7,7 +7,8 @@
 	import sanitizeHtml from 'sanitize-html';
 	import hljs from 'highlight.js';
 	import 'highlight.js/styles/obsidian.css';
-	import 'github-markdown-css/github-markdown.css'
+	import 'github-markdown-css/github-markdown.css';
+	import { ScrollArea } from '$lib/components/ui/scroll-area';
 
 	let {
 		markdownText
@@ -18,7 +19,7 @@
 	let md: MarkdownIt | null = null as MarkdownIt | null;
 
 	let initialized = $state(false);
-	
+
 	onMount(async () => {
 		// 动态加载语言支持（按需加载）
 		await import('highlight.js/lib/languages/javascript');
@@ -32,7 +33,7 @@
 			hljs.registerLanguage('javascript', jsLang.default);
 			hljs.registerLanguage('typescript', tsLang.default);
 		});
-		
+
 		// 创建 Markdown 解析器实例
 		md = new MarkdownIt({
 			html: true,
@@ -62,9 +63,7 @@
 	});
 
 	const sanitizeOptions = {
-		allowedTags: sanitizeHtml.defaults.allowedTags.concat([
-			'span', 'pre', 'code', 'kbd', 'samp'
-		]),
+		allowedTags: sanitizeHtml.defaults.allowedTags.concat(['span', 'pre', 'code', 'kbd', 'samp']),
 		allowedAttributes: {
 			'*': ['class', 'style'],
 			code: ['class*'],
@@ -77,21 +76,24 @@
 	};
 
 	const htmlContent = $derived(
-		initialized && md 
+		initialized && md
 			? sanitizeHtml(md.render(markdownText), sanitizeOptions)
 			: '<p>Loading code highlighter...</p>'
 	);
 </script>
 
-<Card.Root>
-	<Card.Content>
-		<div class="preview markdown-body">
-			{@html htmlContent}
-		</div>
-	</Card.Content>
-</Card.Root>
+<main class="container">
+	<ScrollArea class="preview markdown-body rounded-md" scrollHideDelay={10}>
+		{@html htmlContent}
+	</ScrollArea>
+</main>
 
 <style>
+	.container {
+		height: 100vh;
+		display: flex;
+	}
+
 	:global(.markdown-body) {
 		box-sizing: border-box;
 		min-width: 200px;
@@ -106,37 +108,42 @@
 		}
 	}
 
-	.preview :global(ul) {
+	:global(.preview) {
+		flex: 1;
+		overflow: auto;
+	}
+
+	:global(.preview) :global(ul) {
 		list-style: disc outside none;
 		margin: 0.75rem 0;
 		padding-left: 2rem;
 	}
 
-	.preview :global(ol) {
+	:global(.preview) :global(ol) {
 		list-style: decimal outside none;
 		margin: 0.75rem 0;
 		padding-left: 2rem;
 	}
 
-	.preview :global(li) {
+	:global(.preview) :global(li) {
 		margin: 0.25rem 0;
 		line-height: 1.6;
 	}
 
-	.preview :global(ul) :global(ul) {
+	:global(.preview) :global(ul) :global(ul) {
 		list-style-type: circle;
 		margin: 0.2rem 0;
 	}
 
-	.preview :global(ul) :global(ul) :global(ul) {
+	:global(.preview) :global(ul) :global(ul) :global(ul) {
 		list-style-type: square;
 	}
 
-	.preview :global(ol) :global(ol) {
+	:global(.preview) :global(ol) :global(ol) {
 		list-style-type: lower-alpha;
 	}
 
-	.preview :global(ol) :global(ol) :global(ol) {
+	:global(.preview) :global(ol) :global(ol) :global(ol) {
 		list-style-type: lower-roman;
 	}
 </style>
