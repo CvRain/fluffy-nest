@@ -10,6 +10,7 @@
 	import * as DropdownMenu from '$lib/components/ui/dropdown-menu/index';
 	import * as Sidebar from '$lib/components/ui/sidebar/index';
 	import { useSidebar } from '$lib/components/ui/sidebar/index';
+	import { Settings } from 'lucide-svelte';
 
 	let {
 		user
@@ -40,7 +41,7 @@
 						</Avatar.Root>
 						<div class="grid flex-1 text-left text-sm leading-tight">
 							<span class="truncate font-semibold">{user.name}</span>
-                            
+
 							<span class="truncate text-xs">{user.email}</span>
 						</div>
 						<ChevronsUpDown class="ml-auto size-4" />
@@ -67,10 +68,6 @@
 				</DropdownMenu.Label>
 				<DropdownMenu.Separator />
 				<DropdownMenu.Group>
-					<DropdownMenu.Item>
-						<Sparkles />
-						Upgrade to Pro
-					</DropdownMenu.Item>
 				</DropdownMenu.Group>
 				<DropdownMenu.Separator />
 				<DropdownMenu.Group>
@@ -79,12 +76,8 @@
 						Account
 					</DropdownMenu.Item>
 					<DropdownMenu.Item>
-						<CreditCard />
-						Billing
-					</DropdownMenu.Item>
-					<DropdownMenu.Item>
-						<Bell />
-						Notifications
+						<Settings />
+                        Settings
 					</DropdownMenu.Item>
 				</DropdownMenu.Group>
 				<DropdownMenu.Separator />
