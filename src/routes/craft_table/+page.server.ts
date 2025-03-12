@@ -37,7 +37,7 @@ export const load: PageServerLoad = async ({ cookies }) => {
 	};
 };
 
-const checkTokenExpired = async (userId: string, token: string) => {
+const checkTokenExpired = async (userId: string, token: string): Promise<BaseResponse> => {
 	const url = new URL(`${API_BASE_URL}/user/login/token`);
 	url.searchParams.append('user_id', userId);
 
@@ -57,10 +57,10 @@ const checkTokenExpired = async (userId: string, token: string) => {
 	} catch (error) {
 		console.error('checkTokenExpired: ', error);
 		return {
-			code: '401',
+			code: 401,
 			message: 'checkTokenExpired error',
 			status: 'error',
-			result: error
+			result: ""
 		};
 	}
 };

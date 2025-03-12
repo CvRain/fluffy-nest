@@ -19,21 +19,8 @@
 	let alertMessage = $state('');
 	let markdownText = $state('# Write your idea~');
 
-	let pageData: {
-		pageData: PageServerData;
-	} = $props();
-
-	let userInfo:  UserInfoResponse;
-	let treeDirectory: TreeDirectoryResponse;
-
 	onMount(() => {
 		alertType = 'default';
-		
-		userInfo = pageData.pageData.userInfo;
-		treeDirectory = pageData.pageData.directory;
-
-		console.debug("user info", userInfo)
-		console.debug("tree directory", treeDirectory)
 
 	});
 </script>
