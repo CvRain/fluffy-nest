@@ -11,17 +11,34 @@
 	import * as Resizable from '$lib/components/ui/resizable/index.js';
 	import Textarea from '$lib/components/ui/textarea/textarea.svelte';
 	import MarkdownPreview from '$lib/components/markdown-preview.svelte';
-	import type { PageServerData } from './$types';
-	import type { TreeDirectoryResponse, UserInfoResponse } from './schema';
+	import type { PageServerData, PageServerLoad } from './$types';
+	import type { TreeDirectoryResponse, UserInfo, UserInfoResponse } from './schema';
 
 	let showAlert: boolean = $state(false);
 	let alertType: 'default' | 'destructive' = $state('default');
 	let alertMessage = $state('');
 	let markdownText = $state('# Write your idea~');
 
+	let {
+		data
+	}: {
+		data: PageServerData;
+	} = $props();
+
+	const userInfo: UserInfoResponse = data.userInfo;
+	const directory: TreeDirectoryResponse = data.directory;
+
+	let userData: UserInfo;
+
+	if (userInfo.code === 200 && userInfo.data !== null) {
+		userData = userInfo.data;
+	}
+
 	onMount(() => {
 		alertType = 'default';
 
+		console.debug('user info', userInfo);
+		console.debug('directory', directory);
 	});
 </script>
 
@@ -38,7 +55,7 @@
 </div>
 
 <Sidebar.Provider>
-	<CraftTableSidebar /> 
+	<CraftTableSidebar userInfo={userData} />
 	<Sidebar.Inset>
 		<header class="flex h-16 shrink-0 items-center gap-2 border-b px-4">
 			<Sidebar.Trigger class="-ml-1" />
@@ -64,7 +81,10 @@
 				<Card.Content>
 					<Resizable.PaneGroup direction="horizontal" class="min-h-[200px] rounded-lg border">
 						<Resizable.Pane>
-							<Textarea placeholder="write your idea~" bind:value={markdownText} class="full-height .hide-scrollbar"
+							<Textarea
+								placeholder="write your idea~"
+								bind:value={markdownText}
+								class="full-height .hide-scrollbar"
 							></Textarea>
 						</Resizable.Pane>
 						<Resizable.Handle withHandle />

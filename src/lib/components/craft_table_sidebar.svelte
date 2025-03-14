@@ -33,12 +33,6 @@
 			'README.md'
 		]
 	};
-
-	let user = {
-		name: 'shadcn',
-		email: 'm@example.com',
-		avatar: ''
-	};
 </script>
 
 <script lang="ts">
@@ -51,7 +45,17 @@
 	import { Footer } from './ui/card';
 	import NavUser from './nav-user.svelte';
 
-	let { ref = $bindable(null), ...restProps }: ComponentProps<typeof Sidebar.Root> = $props();
+	interface UserInfo {
+		name: string;
+		email: string;
+		icon: string;
+	}
+
+	interface CustomSidebarProps extends ComponentProps<typeof Sidebar.Root> {
+		userInfo: UserInfo;
+	}
+
+	let { ref = $bindable(null), userInfo, ...restProps }: CustomSidebarProps = $props();
 </script>
 
 <Sidebar.Root bind:ref {...restProps}>
@@ -85,7 +89,7 @@
 	</Sidebar.Content>
 	<Sidebar.Rail />
 	<Sidebar.Footer>
-		<NavUser {user}></NavUser>
+		<NavUser user={userInfo}></NavUser>
 	</Sidebar.Footer>
 </Sidebar.Root>
 
