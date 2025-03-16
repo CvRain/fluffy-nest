@@ -1,11 +1,19 @@
 <script lang="ts">
     import {page} from '$app/stores'
+    import { afterNavigate, beforeNavigate } from '$app/navigation';
 
     console.log($page.params.slug)
     const slugArr = $page.params.slug.split("/")
 
-    slugArr.forEach((value, index, array) =>{
+    slugArr.forEach((value, index) =>{
         console.log(index, ":", value)
+    })
+
+    beforeNavigate((navigation) => {
+        console.debug("before navigation ", navigation)
+    })
+    afterNavigate((navigation) =>{
+        console.debug("afteer naviagtion ", navigation)
     })
 </script>
 
