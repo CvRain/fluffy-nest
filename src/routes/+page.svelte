@@ -5,12 +5,14 @@
 	import { CardHeader } from '@/components/ui/card';
 	import { Avatar } from '$lib/components/ui/avatar';
 	import { Badge } from '$lib/components/ui/badge';
-	import { Sun, Moon, X, Menu, Github } from 'lucide-svelte';
-
+	import { Sun, Moon, X, Menu, GitBranch } from 'lucide-svelte';
+	import * as Resizable from '$lib/components/ui/resizable/index.js';
 	import { resetMode, setMode } from 'mode-watcher';
 	import * as DropdownMenu from '$lib/components/ui/dropdown-menu/index.js';
 	import { buttonVariants } from '$lib/components/ui/button/index.js';
 	import { goto } from '$app/navigation';
+	import MarkdownPreview from '@/components/markdown-preview.svelte';
+	import Textarea from '../lib/components/ui/textarea/textarea.svelte';
 
 	// 示例数据
 	const featuredPosts = [
@@ -37,10 +39,11 @@
 		}
 	];
 
-	let isMenuOpen = false;
+	let isMenuOpen:boolean = $state(false);
+	let markdownText: string = $state('');
 
 	const gotoLogin = () => {
-		goto("/auth/login")
+		goto('/auth/login');
 	};
 </script>
 
@@ -157,7 +160,7 @@
 				</p>
 				<div class="flex justify-center gap-4">
 					<Button size="lg" onclick={() => {window.location.href = "https://github.com/CvRain/fluffy-nest"}}>
-						<Github />
+						<GitBranch />
 						立即探索
 					</Button>
 				</div>
@@ -189,6 +192,44 @@
 			</div>
 		</section>
 
+		<section class="mb-24">
+			<div class="mb-8 flex items-center justify-between">
+				<h2 class="text-3xl font-bold text-slate-900 dark:text-slate-100">墨砚沙盘</h2>
+				<div class="flex items-center gap-2 text-sm text-slate-500 dark:text-slate-400">
+					<span class="bg-amber-100 px-2 py-1 text-xs dark:bg-slate-800">Beta</span>
+					支持Markdown语法 · 实时双屏预览
+				</div>
+			</div>
+
+			<div class="overflow-hidden rounded-xl border bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900">
+				<Resizable.PaneGroup
+					direction="horizontal"
+					class="min-h-[400px] [&_.handle]:w-2 [&_.handle]:bg-slate-100 [&_.handle]:hover:bg-slate-200 dark:[&_.handle]:bg-slate-800 dark:[&_.handle]:hover:bg-slate-700"
+				>
+					<Resizable.Pane class="p-4">
+        <Textarea
+					placeholder="在此处泼墨挥毫，文成自有云章..."
+					bind:value={markdownText}
+					class="h-full !resize-none !border-0 !ring-0 placeholder:text-slate-400 dark:!bg-slate-900 dark:placeholder:text-slate-600"
+				/>
+					</Resizable.Pane>
+
+					<Resizable.Handle withHandle class="transition-colors" />
+
+					<Resizable.Pane defaultSize={45} class="bg-slate-50 p-4 dark:bg-slate-950">
+						<MarkdownPreview
+							{markdownText}
+							class="prose prose-sm max-w-none dark:prose-invert"
+						/>
+					</Resizable.Pane>
+				</Resizable.PaneGroup>
+			</div>
+
+			<p class="mt-4 text-sm text-slate-500 dark:text-slate-400">
+				小贴士：输入 # 标题 / **粗体** / ``` 代码块 体验快捷排版
+			</p>
+		</section>
+
 		<!-- CTA Section -->
 		<section class="rounded-2xl bg-gradient-to-r from-blue-500 to-purple-600 p-8 text-center text-white">
 			<div class="mx-auto max-w-2xl">
@@ -203,6 +244,8 @@
 			</div>
 		</section>
 	</main>
+
+
 
 	<!-- Footer -->
 	<footer class="border-t bg-white dark:bg-slate-900 mt-auto">
@@ -237,5 +280,18 @@
     /* 卡片过渡 */
     :global(.card-transition) {
         @apply transition-all duration-300 ease-out;
+    }
+
+    /* 在全局样式中添加 */
+    :global(.prose) {
+        :global(h2){
+            @apply text-amber-600 dark:text-amber-400;
+        }
+        :global(code) {
+            @apply bg-amber-100 text-amber-800 dark:bg-slate-800 dark:text-amber-200;
+        }
+        :global(a) {
+            @apply text-blue-600 underline dark:text-blue-400;
+        }
     }
 </style>
