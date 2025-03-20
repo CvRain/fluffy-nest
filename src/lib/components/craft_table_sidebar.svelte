@@ -1,20 +1,6 @@
 <script lang="ts" module>
 	// This is sample data.
 	const data = {
-		changes: [
-			{
-				file: 'README.md',
-				state: 'M'
-			},
-			{
-				file: 'routes/+page.svelte',
-				state: 'U'
-			},
-			{
-				file: 'routes/+layout.svelte',
-				state: 'M'
-			}
-		],
 		tree: [
 			['lib', ['components', 'button.svelte', 'card.svelte'], 'utils.ts'],
 			[
@@ -60,22 +46,6 @@
 
 <Sidebar.Root bind:ref {...restProps}>
 	<Sidebar.Content>
-		<Sidebar.Group>
-			<Sidebar.GroupLabel>Changes</Sidebar.GroupLabel>
-			<Sidebar.GroupContent>
-				<Sidebar.Menu>
-					{#each data.changes as item, index (index)}
-						<Sidebar.MenuItem>
-							<Sidebar.MenuButton>
-								<File />
-								{item.file}
-							</Sidebar.MenuButton>
-							<Sidebar.MenuBadge>{item.state}</Sidebar.MenuBadge>
-						</Sidebar.MenuItem>
-					{/each}
-				</Sidebar.Menu>
-			</Sidebar.GroupContent>
-		</Sidebar.Group>
 		<Sidebar.Group>
 			<Sidebar.GroupLabel>Files</Sidebar.GroupLabel>
 			<Sidebar.GroupContent>

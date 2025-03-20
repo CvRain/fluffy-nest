@@ -40,7 +40,7 @@
 	];
 
 	let isMenuOpen:boolean = $state(false);
-	let markdownText: string = $state('');
+	let markdownText: string = $state('hello world!');
 
 	const gotoLogin = () => {
 		goto('/auth/login');
